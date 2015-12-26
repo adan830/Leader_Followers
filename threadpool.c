@@ -1,3 +1,7 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+
 #include "threadpool.h"
 
 struct threadpool* threadpool_init(int thread_num, int queue_max_num)
@@ -54,6 +58,7 @@ struct threadpool* threadpool_init(int thread_num, int queue_max_num)
 
 int threadpool_add_job(struct threadpool *pool, void* (*callback_function)(void *arg), void *arg)
 {
+	struct job *pjob;
 	assert(pool != NULL);
 	assert(callback_function != NULL);
 	assert(arg != NULL);
@@ -71,7 +76,7 @@ int threadpool_add_job(struct threadpool *pool, void* (*callback_function)(void 
 		return -1;
 	}
 
-	struct job *pjob = (struct *job) malloc(sizeof(struct job));
+	pjob = (struct job *) malloc(sizeof(struct job));
 	if(NULL == pjob)
 	{
 		pthread_mutex_unlock(&(pool->mutex));
@@ -91,7 +96,7 @@ int threadpool_add_job(struct threadpool *pool, void* (*callback_function)(void 
 		pool->tail = pjob;
 	}
 	pool->queue_cur_num++;
-	phtread_mutex_unlock(&(pool->mutex));
+	pthread_mutex_unlock(&(pool->mutex));
 	return 0;
 }
 
@@ -104,7 +109,7 @@ void* threadpool_function(void *arg)
 		pthread_mutex_lock(&(pool->mutex));
 		while((pool->queue_cur_num == 0) && !pool->pool_close)
 		{
-			phtread_cond_wait(&(pool->queue_not_empty), &(pool->mutex));
+			pthread_cond_wait(&(pool->queue_not_empty), &(pool->mutex));
 		}
 		if(pool->pool_close)
 		{

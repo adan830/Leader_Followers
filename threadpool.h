@@ -1,5 +1,6 @@
 #ifndef __THREADPOOL__
 #define __THREADPOOL__
+#include <pthread.h>
 
 struct job
 {
@@ -27,6 +28,6 @@ struct threadpool
 struct threadpool* threadpool_init(int thread_num, int queue_max_num);
 int threadpool_add_job(struct threadpool *pool, void* (*callback_function)(void *arg), void *arg);
 int threadpool_destroy(struct threadpool *pool);
-void threadpool_function(void *arg);
+void* threadpool_function(void *arg);
 
 #endif
