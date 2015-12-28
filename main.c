@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #include "threadpool.h"
 
@@ -56,20 +57,26 @@ void do_job(client)
 {
 	char buf[1024];
 	int len;
-//#if 0
 	while(1)
 	{
 		len = read(client,buf,sizeof(buf));
+		if(len <= 0)
+		{
+			perror("read error!");
+			break;
+		}
 		if(!memcmp("exit",buf,len))
 		{
 			send(client,"GoodBye",7,0);
-			close(client);
-			return;
+			break;
 		}
-		send(client,buf,len,0);
+		len = send(client,buf,len,0);
+		if(len <= 0)
+		{
+			perror("send error!");
+			break;
+		}
 	}
-//#endif
-	send(client,buf,strlen(buf),0);
 	close(client);
 }
 
@@ -95,6 +102,8 @@ void *work(void *arg)
 int main(int argc, char *argv[])
 {
 	int *listensock;
+
+	signal(SIGPIPE, SIG_IGN);
 
 	listensock = (int *)malloc(sizeof(int));
 	*listensock = get_listen_socket();
