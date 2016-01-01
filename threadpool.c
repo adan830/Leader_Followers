@@ -4,6 +4,12 @@
 
 #include "threadpool.h"
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  threadpool_init
+ *  Description:  线程池初始化函数，thread_num:线程数，queue_max_num:队列任务最大数量。
+ * =====================================================================================
+ */
 struct threadpool* threadpool_init(int thread_num, int queue_max_num)
 {
 	int i;
@@ -56,6 +62,12 @@ struct threadpool* threadpool_init(int thread_num, int queue_max_num)
 	return pool;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  threadpool_add_job
+ *  Description:  向线程池添加任务，任务添加到队列中。
+ * =====================================================================================
+ */
 int threadpool_add_job(struct threadpool *pool, void* (*callback_function)(void *arg), void *arg)
 {
 	struct job *pjob;
@@ -100,6 +112,12 @@ int threadpool_add_job(struct threadpool *pool, void* (*callback_function)(void 
 	return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  threadpool_function
+ *  Description:  线程执行函数，当队列有任务时获取任务并执行callback_function。
+ * =====================================================================================
+ */
 void* threadpool_function(void *arg)
 {
 	struct threadpool *pool = (struct threadpool*)arg;
@@ -142,6 +160,12 @@ void* threadpool_function(void *arg)
 	}
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  threadpool_destroy
+ *  Description:  等待队列中任务完成后销毁线程池
+ * =====================================================================================
+ */
 int threadpool_destroy(struct threadpool *pool)
 {
 	int i;

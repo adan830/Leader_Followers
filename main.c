@@ -11,6 +11,12 @@
 
 struct threadpool *gThreadPool;
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  get_listen_socket
+ *  Description:  创建监听socket
+ * =====================================================================================
+ */
 int get_listen_socket()
 {
 	int sock,res;
@@ -53,6 +59,12 @@ int get_listen_socket()
 	return sock;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  do_job
+ *  Description:  业务处理函数，client：客户端socket。
+ * =====================================================================================
+ */
 void do_job(client)
 {
 	char buf[1024];
@@ -80,6 +92,12 @@ void do_job(client)
 	close(client);
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  work
+ *  Description:  领导者/追随者模式实例函数，arg:监听socket。
+ * =====================================================================================
+ */
 void *work(void *arg)
 {
 	int *listensock = (int *)arg;
